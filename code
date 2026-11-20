@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>متابعة طلبات المنتدبين – الهيئة العامة للتعليم التطبيقي والتدريب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sand:#F4EFEA; --cream:#F9F6F0; --card:#FFFDF9; --line:#E6DDD0;
+  --ink:#1E293B; --muted:#6B7280; --gold:#C5A059; --gold-d:#9C7B3A;
+  --ok-bg:#E3F3E8; --ok:#1F7A45; --wip-bg:#FDF0D0; --wip:#9A6B00;
+  --bad-bg:#FBE3E1; --bad:#B42318; --off-bg:#ECEAE6; --off:#5B6068;
+  --shadow:0 1px 2px rgba(30,41,59,.05),0 8px 24px -12px rgba(30,41,59,.18);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Tajawal',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+/* ---------- Sidebar ---------- */
+aside{background:var(--ink);color:#EDE6DA;padding:28px 22px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:12px;align-items:center;padding-bottom:22px;border-bottom:1px solid rgba(197,160,89,.35);margin-bottom:22px}
+.mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(145deg,var(--gold),#E4C98C);display:grid;place-items:center;color:var(--ink);font-weight:800;font-size:15px;flex:none}
+.brand b{display:block;font-size:15px;line-height:1.3}
+.brand small{color:#B9B2A5;font-size:12px}
+.f{margin-bottom:16px}
+.f label{display:block;font-size:12.5px;color:#C9C1B2;margin-bottom:6px}
+aside select,aside input{width:100%;background:#2A374C;border:1px solid #3B4A63;border-radius:10px;padding:9px 12px;color:#F4EFEA}
+aside select option{color:#1E293B}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{background:#2A374C;border:1px solid #3B4A63;color:#D8D0C2;border-radius:10px;padding:8px 4px;font-size:12.5px;cursor:pointer}
+.seg button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
+.addyear{display:flex;gap:6px;margin-top:8px}
+.addyear input{flex:1;padding:7px 10px;font-size:13px}
+.addyear button{background:transparent;border:1px dashed var(--gold);color:var(--gold);border-radius:10px;padding:0 12px;cursor:pointer}
+
+/* ---------- Main ---------- */
+main{padding:32px clamp(16px,3vw,44px) 60px;min-width:0}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+h1{font-size:28px;font-weight:800;letter-spacing:-.2px}
+.ctx{color:var(--muted);margin-top:4px}
+.ctx b{color:var(--gold-d)}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:12px;padding:11px 20px;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
+.btn:hover{background:#2D3B52}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);border-top:3px solid var(--c,var(--gold))}
+.kpi span{color:var(--muted);font-size:13.5px}
+.kpi strong{display:block;font-size:34px;font-weight:800;line-height:1.2;color:var(--c,var(--ink))}
+.kpi small{color:var(--muted);font-size:12px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--sand)}
+.panel-h h2{font-size:16px}
+.search{position:relative;flex:1;max-width:340px;min-width:200px}
+.search input{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th{font-size:12.5px;color:var(--muted);font-weight:500;text-align:right;padding:12px 16px;background:var(--cream);white-space:nowrap}
+td{padding:10px 16px;border-top:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:#FBF8F2}
+.name{font-weight:700}
+.sub{font-size:12px;color:var(--muted)}
+.ord{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block;color:var(--gold-d);font-weight:700}
+.pill{appearance:none;border:0;border-radius:999px;padding:6px 30px 6px 14px;font-size:13px;font-weight:700;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' fill='none' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:left 11px center}
+.pill.paid{background-color:var(--ok-bg);color:var(--ok);box-shadow:0 0 0 3px rgba(31,122,69,.08)}
+.pill.wip{background-color:var(--wip-bg);color:var(--wip);box-shadow:0 0 0 3px rgba(154,107,0,.08)}
+.pill.miss{background-color:var(--bad-bg);color:var(--bad);box-shadow:0 0 0 3px rgba(180,35,24,.08)}
+.pill.none{background-color:var(--off-bg);color:var(--off)}
+
+/* Sub-note under the name */
+.detail{display:block;width:100%;border:0;border-bottom:1px dashed transparent;background:transparent;font-size:11.5px;color:#9A968E;padding:1px 0;margin-top:1px;border-radius:0}
+.detail::placeholder{color:#CFC9BE}
+.detail:hover{border-bottom-color:var(--line)}
+.detail:focus,.detail:focus-visible{outline:none;border-bottom-color:var(--gold);color:var(--ink)}
+.tags{display:none;gap:4px;flex-wrap:wrap;margin-top:5px;max-width:320px}
+td:focus-within .tags{display:flex}
+.tag{border:1px solid var(--line);background:var(--cream);color:var(--muted);border-radius:999px;font-size:11px;padding:1px 9px;cursor:pointer}
+.tag:hover{border-color:var(--gold);color:var(--gold-d)}
+
+.note{width:100%;min-width:180px;border:1px solid transparent;background:transparent;border-radius:8px;padding:6px 8px}
+.note:hover,.note:focus{border-color:var(--line);background:#fff}
+.del{background:none;border:0;color:#B8AFA0;cursor:pointer;font-size:18px;padding:4px 8px;border-radius:8px}
+.del:hover{color:var(--bad);background:var(--bad-bg)}
+.empty{padding:48px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+
+/* ---------- Modal ---------- */
+dialog{border:0;border-radius:22px;padding:0;width:min(560px,94vw);box-shadow:0 30px 80px -20px rgba(30,41,59,.5);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(30,41,59,.45);backdrop-filter:blur(3px)}
+.m-h{padding:20px 24px;border-bottom:1px solid var(--line);background:var(--sand);display:flex;justify-content:space-between;align-items:center}
+.m-b{padding:22px 24px;display:grid;gap:14px}
+.m-b label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+.m-b input,.m-b select,.m-b textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.m-b textarea{min-height:150px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tabs{display:flex;gap:6px;background:var(--sand);padding:4px;border-radius:12px}
+.tabs button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px;cursor:pointer;font-weight:500}
+.tabs button.on{background:#fff;box-shadow:var(--shadow);font-weight:700}
+.m-f{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-start}
+.hint{font-size:12px;color:var(--muted)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 22px;border-radius:999px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ================= Sidebar: cascading filters ================= -->
+<aside>
+  <div class="brand">
+    <div class="mark">PAAET</div>
+    <div><b>الهيئة العامة للتعليم التطبيقي والتدريب</b><small>متابعة طلبات المنتدبين</small></div>
+  </div>
+
+  <div class="f"><label for="fYear">السنة الدراسية</label><select id="fYear"></select>
+    <div class="addyear"><input id="newYear" placeholder="مثال: 2027-2028" dir="ltr"><button id="addYearBtn" title="إضافة سنة">+ إضافة</button></div>
+  </div>
+  <div class="f"><label>الفصل الدراسي</label><div class="seg" id="fTerm"></div></div>
+  <div class="f"><label for="fDept">الكلية / المعهد</label><select id="fDept"></select></div>
+  <div class="f"><label for="fGroup">فئة المنتدبين</label><select id="fGroup"></select></div>
+  <div class="f"><label for="fStatus">حالة الصرف</label><select id="fStatus"></select></div>
+  <button class="btn ghost" id="resetBtn" style="color:#EDE6DA;border-color:#3B4A63;width:100%">إعادة ضبط الفلاتر</button>
+</aside>
+
+<!-- ================= Main ================= -->
+<main>
+  <header class="top">
+    <div>
+      <h1>سجل طلبات الصرف</h1>
+      <p class="ctx" id="ctx"></p>
+    </div>
+    <button class="btn gold" id="openAdd">+ إضافة طلب</button>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="panel">
+    <div class="panel-h">
+      <h2 id="tableTitle">الطلبات</h2>
+      <div class="search"><input id="q" type="search" placeholder="ابحث بالاسم أو رقم الأمر…"></div>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>الاسم</th><th>رقم الأمر</th><th>الفئة</th><th>الحالة</th><th>ملاحظات النواقص</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" hidden><b>لا توجد طلبات مطابقة</b>غيّر الفلاتر أو أضف طلباً جديداً لهذا الفصل.</div>
+  </section>
+</main>
+</div>
+
+<!-- ================= Add modal ================= -->
+<dialog id="dlg">
+  <div class="m-h"><b style="font-size:17px">إضافة طلبات</b><button class="del" id="closeDlg" aria-label="إغلاق">✕</button></div>
+  <div class="m-b">
+    <div class="tabs"><button class="on" data-tab="one">طلب واحد</button><button data-tab="bulk">لصق قائمة أسماء</button></div>
+    <div class="row2">
+      <div><label>السنة والفصل</label><input id="mCtx" disabled></div>
+      <div><label for="mGroup">الفئة</label><select id="mGroup"></select></div>
+    </div>
+    <div><label for="mDept">الكلية / المعهد</label><select id="mDept"></select></div>
+
+    <div id="tabOne" class="row2">
+      <div><label for="mName">الاسم</label><input id="mName"></div>
+      <div><label for="mOrder">رقم الأمر</label><input id="mOrder" dir="ltr"></div>
+    </div>
+    <div id="tabBulk" hidden>
+      <label for="mBulk">اسم في كل سطر (يمكن إضافة رقم الأمر بعد فاصلة)</label>
+      <textarea id="mBulk" placeholder="أحمد محمد الكندري, 4412&#10;سارة خالد العنزي"></textarea>
+      <p class="hint">تُضاف كل الأسماء بحالة «لم يتم الصرف» ويمكن تعديلها لاحقاً.</p>
+    </div>
+  </div>
+  <div class="m-f"><button class="btn" id="saveBtn">حفظ</button><button class="btn ghost" id="cancelBtn">إلغاء</button></div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   1) CONSTANTS
+   ===================================================================== */
+const TERMS  = ['الفصل الدراسي الأول','الفصل الدراسي الثاني','الفصل الصيفي'];
+const TERM_SHORT = ['الأول','الثاني','الصيفي'];
+const DEPTS  = ['كلية التربية الأساسية','كلية الدراسات التجارية','كلية الدراسات التكنولوجية','كلية العلوم الصحية','كلية التمريض','المعهد العالي للاتصالات والملاحة','المعهد العالي للطاقة','معهد التدريب المهني','معهد التدريب الإنشائي'];
+const GROUPS = ['مشرفين من الداخل','مشرفين من الخارج','عاملين من الداخل','عاملين من الخارج'];
+const TAGS   = ['عند المالية','عند رئيس القسم','بانتظار التوقيع','بانتظار المستندات','عند شؤون الموظفين'];
+const STATUS = { paid:'تم الصرف', wip:'قيد التنفيذ', miss:'نقص بيانات', none:'لم يتم الصرف' };
+
+/* =====================================================================
+   2) DATA LAYER – the ONLY part to replace for Firebase Firestore.
+   Keep the same surface: load(), save(). Swap localStorage for
+   getDocs / setDoc / onSnapshot and call render() inside the listener.
+   ===================================================================== */
+const Store = {
+  KEY:'paaet-tracker-v1',
+  load(){ try{ return JSON.parse(localStorage.getItem(this.KEY)); }catch(e){ return null; } },
+  save(db){ try{ localStorage.setItem(this.KEY, JSON.stringify(db)); }catch(e){} }
+};
+
+function seed(){
+  const names = ['أحمد محمد الكندري','سارة خالد العنزي','فهد عبدالله المطيري','نورة يوسف الرشيدي','خالد سعود العجمي','مريم علي الصباح','عبدالرحمن ناصر الهاجري','هند فيصل العتيبي','بدر جاسم الشمري','دلال راشد الفضلي','يوسف حمد الدوسري','لولوة سالم الظفيري'];
+  const notes = ['','','صورة البطاقة المدنية غير واضحة','لم يُرفق نموذج الانتداب','يلزم اعتماد رئيس القسم','رقم الآيبان غير مكتمل'];
+  const sts = ['paid','paid','wip','miss','none','paid','wip'];
+  const items = []; let n = 0, ord = 3100;
+  ['2024-2025'].forEach(y => TERMS.forEach((t,ti) => {
+    const count = ti === 2 ? 6 : 14;
+    for(let i=0;i<count;i++,n++){
+      const s = sts[(n*3+ti)%sts.length];
+      items.push({ id:'r'+n, year:y, term:t, dept:DEPTS[(n*2+ti)%DEPTS.length], group:GROUPS[n%4],
+        name:names[(n*5+ti)%names.length], order:String(ord+=7), status:s,
+        detail: s==='wip' ? (n%2 ? 'عند المالية' : 'بانتظار التوقيع') : s==='miss' ? 'بانتظار المستندات' : '',
+        note: s==='miss' ? (notes[2+(n%4)]) : '' });
+    }
+  }));
+  return { years:['2024-2025','2025-2026','2026-2027'], items };
+}
+
+let db = Store.load() || seed();
+Store.save(db);
+
+/* =====================================================================
+   3) UI STATE
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const view = { year:db.years[0], term:TERMS[0], dept:'', group:'', status:'', q:'' };
+
+function fillSelect(el, list, allLabel, value){
+  el.innerHTML = (allLabel ? `<option value="">${allLabel}</option>` : '') + list.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  el.value = value;
+}
+
+/* =====================================================================
+   4) RENDER
+   ===================================================================== */
+function render(){
+  fillSelect($('#fYear'), db.years, '', view.year);
+  fillSelect($('#fDept'), DEPTS, 'كل الكليات والمعاهد', view.dept);
+  fillSelect($('#fGroup'), GROUPS, 'كل الفئات', view.group);
+  $('#fStatus').innerHTML = `<option value="">كل الحالات</option>` + Object.entries(STATUS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  $('#fStatus').value = view.status;
+  $('#fTerm').innerHTML = TERMS.map((t,i)=>`<button data-t="${i}" class="${t===view.term?'on':''}">${TERM_SHORT[i]}</button>`).join('');
+
+  // KPIs: scoped to the selected year + semester
+  const scope = db.items.filter(r => r.year===view.year && r.term===view.term);
+  const c = k => scope.filter(r=>r.status===k).length;
+  const pct = scope.length ? Math.round(c('paid')/scope.length*100) : 0;
+  $('#kpis').innerHTML = [
+    ['إجمالي الطلبات', scope.length, 'var(--gold)', `${view.year} · ${TERM_SHORT[TERMS.indexOf(view.term)]}`],
+    ['تم الصرف', c('paid'), 'var(--ok)', `${pct}% من الطلبات`],
+    ['قيد التنفيذ', c('wip'), 'var(--wip)', 'بانتظار الإجراء'],
+    ['نقص بيانات', c('miss'), 'var(--bad)', 'تحتاج استكمالاً'],
+  ].map(([l,v,col,s])=>`<div class="kpi" style="--c:${col}"><span>${l}</span><strong>${v}</strong><small>${s}</small></div>`).join('');
+
+  $('#ctx').innerHTML = `<b>${view.year}</b> — ${esc(view.term)}${view.dept?' — '+esc(view.dept):''}${view.group?' — '+esc(view.group):''}`;
+
+  // Table: all filters + search
+  const q = view.q.trim();
+  const list = scope.filter(r =>
+    (!view.dept || r.dept===view.dept) && (!view.group || r.group===view.group) &&
+    (!view.status || r.status===view.status) &&
+    (!q || r.name.includes(q) || String(r.order).includes(q) || (r.detail||'').includes(q)));
+  $('#tableTitle').textContent = `الطلبات (${list.length})`;
+  $('#empty').hidden = list.length > 0;
+  $('#rows').innerHTML = list.map(r=>`
+    <tr>
+      <td><div class="name">${esc(r.name)}</div>
+        <input class="detail" data-id="${r.id}" value="${esc(r.detail)}" placeholder="تفاصيل الحالة…" aria-label="تفاصيل الحالة">
+        <div class="tags">${TAGS.map(t=>`<button type="button" class="tag" data-tag="${esc(t)}" data-id="${r.id}">${t}</button>`).join('')}</div></td>
+      <td><span class="ord">${esc(r.order)||'—'}</span></td>
+      <td>${esc(r.group)}<div class="sub">${esc(r.dept)}</div></td>
+      <td><select class="pill ${r.status}" data-id="${r.id}" aria-label="الحالة">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${k===r.status?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td><input class="note" data-id="${r.id}" value="${esc(r.note)}" placeholder="أضف ملاحظة…"></td>
+      <td><button class="del" data-del="${r.id}" aria-label="حذف">🗑</button></td>
+    </tr>`).join('');
+}
+
+function commit(){ Store.save(db); render(); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* =====================================================================
+   5) EVENTS
+   ===================================================================== */
+$('#fYear').onchange  = e => { view.year = e.target.value; render(); };
+$('#fDept').onchange  = e => { view.dept = e.target.value; render(); };
+$('#fGroup').onchange = e => { view.group = e.target.value; render(); };
+$('#fStatus').onchange= e => { view.status = e.target.value; render(); };
+$('#fTerm').onclick   = e => { const b=e.target.closest('button'); if(b){ view.term=TERMS[b.dataset.t]; render(); } };
+$('#q').oninput       = e => { view.q = e.target.value; render(); };
+$('#resetBtn').onclick= () => { Object.assign(view,{dept:'',group:'',status:'',q:''}); $('#q').value=''; render(); };
+
+$('#addYearBtn').onclick = () => {
+  const y = $('#newYear').value.trim();
+  if(!/^\d{4}-\d{4}$/.test(y)) return toast('اكتب السنة بصيغة 2027-2028');
+  if(db.years.includes(y)) return toast('هذه السنة موجودة مسبقاً');
+  db.years.push(y); db.years.sort(); view.year = y; $('#newYear').value=''; commit(); toast('تمت إضافة السنة '+y);
+};
+
+// Inline edits: status, sub-note, notes
+$('#rows').onchange = e => {
+  const id = e.target.dataset.id, r = db.items.find(x=>x.id===id);
+  if(r && e.target.matches('select')){ r.status = e.target.value; commit(); }
+  else if(r && e.target.matches('.detail')){ r.detail = e.target.value.trim(); Store.save(db); }
+  else if(r && e.target.matches('.note')){ r.note = e.target.value; Store.save(db); toast('تم حفظ الملاحظة'); }
+};
+// keep the sub-note focused while a quick tag is clicked
+$('#rows').onmousedown = e => { if(e.target.closest('.tag')) e.preventDefault(); };
+$('#rows').onclick = e => {
+  const tg = e.target.closest('[data-tag]');
+  if(tg){ const r = db.items.find(x=>x.id===tg.dataset.id); if(r){ r.detail = tg.dataset.tag; commit(); } return; }
+  const b = e.target.closest('[data-del]'); if(!b) return;
+  const r = db.items.find(x=>x.id===b.dataset.del);
+  if(r && confirm(`حذف طلب «${r.name}»؟`)){ db.items = db.items.filter(x=>x!==r); commit(); toast('تم حذف الطلب'); }
+};
+
+/* ---- Modal ---- */
+let tab = 'one';
+function setTab(t){
+  tab = t;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===t));
+  $('#tabOne').hidden = t!=='one'; $('#tabBulk').hidden = t!=='bulk';
+}
+$('.tabs').onclick = e => { const b=e.target.closest('button'); if(b) setTab(b.dataset.tab); };
+$('#openAdd').onclick = () => {
+  $('#mCtx').value = `${view.year} · ${view.term}`;
+  fillSelect($('#mDept'), DEPTS, '', view.dept || DEPTS[0]);     // defaults to the active filter
+  fillSelect($('#mGroup'), GROUPS, '', view.group || GROUPS[0]);
+  $('#mName').value=''; $('#mOrder').value=''; $('#mBulk').value=''; setTab('one');
+  $('#dlg').showModal(); $('#mName').focus();
+};
+const closeDlg = () => $('#dlg').close();
+$('#closeDlg').onclick = $('#cancelBtn').onclick = closeDlg;
+
+$('#saveBtn').onclick = () => {
+  const base = { year:view.year, term:view.term, dept:$('#mDept').value, group:$('#mGroup').value, status:'none', note:'', detail:'' };
+  const mk = (name, order) => ({ ...base, id:'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name, order:order||'' });
+  let added = [];
+  if(tab==='one'){
+    const name = $('#mName').value.trim();
+    if(!name) return toast('أدخل اسم المنتدب');
+    added.push(mk(name, $('#mOrder').value.trim()));
+  } else {
+    added = $('#mBulk').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+      const [n,o] = l.split(/[,،\t]/).map(s=>s.trim()); return mk(n,o);
+    });
+    if(!added.length) return toast('الصق اسماً واحداً على الأقل');
+  }
+  db.items.push(...added); commit(); closeDlg(); toast(`تمت إضافة ${added.length} طلب`);
+};
+
+render();
+</script>
+</body>
+</html>
